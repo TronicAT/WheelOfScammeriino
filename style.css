@@ -1,0 +1,131 @@
+:root {
+  --bg: #111214;
+  --panel: #1a1c1f;
+  --line: #2a2d31;
+  --text: #e8e9ea;
+  --muted: #8a8f96;
+  --accent: #e8e9ea;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px;
+}
+.app {
+  width: 100%;
+  max-width: 920px;
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 32px;
+  align-items: start;
+}
+@media (max-width: 720px) {
+  .app { grid-template-columns: 1fr; }
+}
+
+.game { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+
+.name {
+  width: 100%;
+  max-width: 320px;
+  padding: 12px 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--text);
+  font: inherit;
+  text-align: center;
+  outline: none;
+}
+.name:focus { border-color: var(--muted); }
+.name.error { border-color: #d9534f; animation: shake .3s; }
+@keyframes shake {
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.wheel-wrap { position: relative; width: min(78vw, 360px); aspect-ratio: 1; }
+.wheel-wrap svg { width: 100%; height: 100%; display: block; }
+#wheel {
+  transform-origin: 0 0;   /* SVG:n koordinaatiston keskipiste (viewBox -100..100) */
+  transition: transform 4.6s cubic-bezier(.12, .6, .1, 1);
+}
+.pointer {
+  position: absolute;
+  left: 50%; top: -6px;
+  width: 0; height: 0;
+  transform: translateX(-50%);
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-top: 20px solid var(--text);
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,.5));
+  z-index: 2;
+}
+
+.spin {
+  padding: 12px 40px;
+  font: inherit;
+  font-weight: 600;
+  letter-spacing: .08em;
+  color: var(--bg);
+  background: var(--text);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.spin:disabled { opacity: .35; cursor: default; }
+
+.result {
+  min-height: 3.4em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  padding: 8px 20px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  visibility: hidden;
+}
+.result.show {
+  visibility: visible;
+  border-color: var(--c);
+  color: var(--c);
+  box-shadow: 0 0 28px -6px var(--c);
+  animation: pop .45s cubic-bezier(.2, 1.6, .4, 1);
+}
+@keyframes pop { from { transform: scale(.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.spinLog {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.spinLog header {
+  display: flex; justify-content: space-between; align-items: center;
+  color: var(--muted); font-size: .8rem; letter-spacing: .08em; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.spinLog button {
+  background: none; border: 0; color: var(--muted); font: inherit; font-size: .8rem; cursor: pointer;
+}
+.spinLog button:hover { color: var(--text); }
+.spinLog ul { list-style: none; margin: 0; padding: 0; max-height: 60vh; overflow-y: auto; }
+.spinLog li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 0;
+  border-top: 1px solid var(--line);
+  font-size: .95rem;
+}
+.spinLog li:first-child { border-top: 0; }
+.dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.spinLog .who { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.spinLog .what { color: var(--muted); font-size: .85rem; }
+.empty { color: var(--muted); font-size: .9rem; padding: 6px 0; }
