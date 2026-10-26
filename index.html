@@ -38,8 +38,9 @@ const REPEAT = 2;
 let OPTIONS = [
   { id: "suorita", label: "SUORITA",  sub: "",             weight: 33.33, color: "#c0504d", message: n => `${n}, suorita!` },
   { id: "eih",     label: "EIH",      sub: "immuniteetti", weight: 33.33, color: "#4f9d69", message: n => `${n} sai immuniteetin!` },
-  { id: "respin",  label: "RESPIN",   sub: "",             weight: 33.34, color: "#5b84c4", message: n => `${n}, pyöritä uudelleen!` },
+  { id: "respin",  label: "RESPIN",   sub: "",             weight: 33.34, color: "#5b84c4", message: n => `${n}, respin!`, autoSpin: true },
 ];
+const RESPIN_DELAY = 1.5;   // sekuntia ennen kuin RESPIN pyörähtää automaattisesti uudelleen
 /* Nämä nimet saavat aina SUORITA (100 %). Kirjoita nimet tähän lainausmerkeissä,
    pilkulla erotettuna, esim. ["Matti", "Maija"]. Isoilla/pienillä kirjaimilla ei ole väliä. */
 const ALWAYS_SUORITA = ["Aapo", "Ape", "AAPO", "APE"];
@@ -100,9 +101,9 @@ function drawWheel() {
 /* Pyöräytys */
 let rotation = 0, spinning = false;
 
-function spin() {
+function spin(forcedName) {
   if (spinning) return;
-  const name = nameEl.value.trim();
+  const name = (forcedName ?? nameEl.value).trim();
   if (!name) {
     nameEl.classList.remove("error"); void nameEl.offsetWidth; nameEl.classList.add("error");
     nameEl.focus();
@@ -126,6 +127,10 @@ function spin() {
     done = true;
     wheel.removeEventListener("transitionend", finish);
     showResult(name, OPTIONS[idx]);
+    if (OPTIONS[idx].autoSpin) {   // nappi pysyy lukittuna ja sama nimi pyöräyttää uudelleen
+      setTimeout(() => { spinning = false; spin(name); }, RESPIN_DELAY * 1000);
+      return;
+    }
     spinning = false;
     spinBtn.disabled = false;
   };
@@ -165,7 +170,7 @@ function renderLog() {
 }
 
 $("clear").addEventListener("click", () => { spinLog = []; save(); renderLog(); });
-spinBtn.addEventListener("click", spin);
+spinBtn.addEventListener("click", () => spin());
 nameEl.addEventListener("keydown", e => { if (e.key === "Enter") spin(); });
 nameEl.addEventListener("animationend", () => nameEl.classList.remove("error"));
 
